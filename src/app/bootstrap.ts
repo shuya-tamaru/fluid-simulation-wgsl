@@ -6,6 +6,7 @@ import { SphParams } from "../compute/sph/SphParams";
 import { TransformSystem } from "../utils/TransformSystem";
 import { FluidScene } from "../scenes/FluidScene";
 import { FluidGui } from "../utils/FluidGui";
+import { createAssets } from "../scenes/createAssets";
 
 export async function bootstrap() {
   //canvas
@@ -20,8 +21,13 @@ export async function bootstrap() {
   const trans = new TransformSystem(device);
   const params = new SphParams(device, 32, 4, 16, 10000);
 
+  //assets
+  const { wireBox, particles } = createAssets(device, format, trans, params);
+
+  //compute
+
   //scene
-  const scene = new FluidScene(device, format, trans, params);
+  const scene = new FluidScene(wireBox, particles);
 
   //gui
   new FluidGui(scene, params);
