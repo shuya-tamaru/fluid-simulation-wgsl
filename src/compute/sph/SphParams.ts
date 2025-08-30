@@ -66,7 +66,7 @@ export class SphParams {
   }
 
   setParticleCount(n: number) {
-    this.particleCount = Math.max(0, n | 0); // バッファ再確保のトリガ
+    this.particleCount = Math.max(0, n | 0);
   }
 
   private recalcBounds() {

@@ -180,6 +180,11 @@ export class Particles {
     });
   }
 
+  resetParticles() {
+    this.dispose();
+    this.init();
+  }
+
   draw(pass: GPURenderPassEncoder) {
     pass.setPipeline(this.pipeline);
     pass.setBindGroup(0, this.makeBindGroup());

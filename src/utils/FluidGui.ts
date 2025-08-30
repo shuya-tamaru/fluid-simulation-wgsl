@@ -45,7 +45,7 @@ export class FluidGui {
       .name("Sphere Count")
       .onChange((v: number) => {
         this.params.particleCount = v;
-        // this.resetSimulation();
+        this.scene.resetSimulation();
       });
   }
 

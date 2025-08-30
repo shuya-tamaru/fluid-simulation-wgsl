@@ -48,7 +48,9 @@ export class FluidScene {
     this.wireBox.setSize({w,h,d});
   }
 
-  resetSimulation() {}
+  resetSimulation() {
+    this.particles.resetParticles();
+  }
 
   draw(pass: GPURenderPassEncoder) {
     this.wireBox.draw(pass);
