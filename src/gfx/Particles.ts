@@ -1,25 +1,91 @@
 import { SphParams } from "../compute/sph/SphParams";
+import type { SphereInstance } from "./SphereInstance";
+import particleShader from "../shaders/particleShader.wgsl";
+import { TransformSystem } from "../utils/TransformSystem";
 
 export class Particles {
   private device: GPUDevice;
+  private format: GPUTextureFormat;
+
   private positions!: Float32Array;
   private velocities!: Float32Array;
   private sphParams: SphParams;
-
+  private trans: TransformSystem;
+  private pipeline!: GPURenderPipeline;
+  private bindGroupLayout!: GPUBindGroupLayout;
+  private sphereInstance!: SphereInstance;
   private positionBufferIn!: GPUBuffer;
   private positionBufferOut!: GPUBuffer;
   private velocityBufferIn!: GPUBuffer;
   private velocityBufferOut!: GPUBuffer;
 
-  constructor(device: GPUDevice, sphParams: SphParams) {
+  constructor(
+    device: GPUDevice,
+    format: GPUTextureFormat,
+    trans: TransformSystem,
+    sphParams: SphParams,
+    sphereInstance: SphereInstance
+  ) {
     this.device = device;
+    this.format = format;
+    this.trans = trans;
     this.sphParams = sphParams;
+    this.sphereInstance = sphereInstance;
     this.init();
   }
 
   private init() {
     this.createParticlePositions();
     this.createBuffer();
+    this.createPipeline();
+  }
+
+  private createPipeline() {
+    this.bindGroupLayout = this.device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: { type: "uniform" }, //transformParams
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: { type: "read-only-storage" }, //position
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: { type: "read-only-storage" }, //velocity
+        },
+      ],
+    });
+
+    const pipelineLayout = this.device.createPipelineLayout({
+      bindGroupLayouts: [this.bindGroupLayout],
+    });
+
+    this.pipeline = this.device.createRenderPipeline({
+      vertex: {
+        module: this.device.createShaderModule({ code: particleShader }),
+        entryPoint: "vs_main",
+        buffers: [this.sphereInstance.getVertexBufferLayout()],
+      },
+      fragment: {
+        module: this.device.createShaderModule({ code: particleShader }),
+        entryPoint: "fs_main",
+        targets: [{ format: this.format }],
+      },
+      primitive: {
+        topology: "triangle-list",
+      },
+      depthStencil: {
+        depthWriteEnabled: true,
+        depthCompare: "less",
+        format: "depth24plus",
+      },
+      layout: pipelineLayout,
+    });
   }
 
   private createParticlePositions() {
@@ -92,6 +158,37 @@ export class Particles {
 
   getVelocityBufferOut() {
     return this.velocityBufferOut;
+  }
+
+  private makeBindGroup(): GPUBindGroup {
+    return this.device.createBindGroup({
+      layout: this.bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: { buffer: this.trans.getBuffer() },
+        },
+        {
+          binding: 1,
+          resource: { buffer: this.positionBufferIn },
+        },
+        {
+          binding: 2,
+          resource: { buffer: this.velocityBufferIn },
+        },
+      ],
+    });
+  }
+
+  draw(pass: GPURenderPassEncoder) {
+    pass.setPipeline(this.pipeline);
+    pass.setBindGroup(0, this.makeBindGroup());
+    pass.setVertexBuffer(0, this.sphereInstance.getVertexBuffer());
+    pass.setIndexBuffer(this.sphereInstance.getIndexBuffer(), "uint16");
+    pass.drawIndexed(
+      this.sphereInstance.getIndexCount(),
+      this.sphParams.particleCount
+    );
   }
 
   dispose() {

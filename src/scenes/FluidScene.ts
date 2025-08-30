@@ -2,6 +2,7 @@ import { TransformSystem } from "../utils/TransformSystem";
 import { SphParams } from "../compute/sph/SphParams";
 import { WireBox } from "../gfx/WireBox";
 import { Particles } from "../gfx/Particles";
+import { SphereInstance } from "../gfx/SphereInstance";
 
 export class FluidScene {
   private device: GPUDevice;
@@ -10,6 +11,7 @@ export class FluidScene {
   private sphParams: SphParams;
   private wireBox!: WireBox;
   private particles!: Particles;
+  private sphereInstance!: SphereInstance;
 
   constructor(
     device: GPUDevice,
@@ -31,7 +33,14 @@ export class FluidScene {
       this.trans.getBuffer(),
       this.sphParams
     );
-    this.particles = new Particles(this.device, this.sphParams);
+    this.sphereInstance = new SphereInstance(this.device);
+    this.particles = new Particles(
+      this.device,
+      this.format,
+      this.trans,
+      this.sphParams,
+      this.sphereInstance
+    );
   }
 
   updateBoxSize(w: number, h: number, d: number) {
@@ -43,5 +52,6 @@ export class FluidScene {
 
   draw(pass: GPURenderPassEncoder) {
     this.wireBox.draw(pass);
+    this.particles.draw(pass);
   }
 }
