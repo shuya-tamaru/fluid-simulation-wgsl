@@ -2,6 +2,9 @@ import Stats from "stats.js";
 import { Device } from "../core/Device";
 import { Renderer } from "../core/Renderer";
 import { attachResize, sizeCanvas } from "./resize";
+import { SphParams } from "../compute/sph/SphParams";
+import { TransformSystem } from "../utils/TransformSystem";
+import { FluidScene } from "../scenes/FluidScene";
 
 export async function bootstrap() {
   const canvas = document.querySelector<HTMLCanvasElement>("#app");
@@ -10,7 +13,12 @@ export async function bootstrap() {
   sizeCanvas(canvas);
 
   const { device, context, format } = await Device.init(canvas);
-  const renderer = new Renderer(device, context, format, canvas);
+  const trans = new TransformSystem(device);
+  const params = new SphParams(32, 4, 16, 10000);
+
+  const scene = new FluidScene(device, format, trans, params);
+
+  const renderer = new Renderer(device, context, format, canvas, scene, trans);
   await renderer.init();
 
   attachResize(canvas, (w, h) => {

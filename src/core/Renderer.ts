@@ -1,8 +1,7 @@
 import { mat4 } from "gl-matrix";
-import { createCubeGeometry } from "../gfx/createCubeGeometry";
 import { TransformSystem } from "../utils/TransformSystem";
-import cubeShader from "../shaders/cube.wgsl";
 import { OrbitCamera } from "./OrbitCamera";
+import { FluidScene } from "../scenes/FluidScene";
 
 export class Renderer {
   private device: GPUDevice;
@@ -11,34 +10,34 @@ export class Renderer {
   private transformMatrix: TransformSystem;
 
   private pipeline!: GPURenderPipeline;
-  private bindGroup!: GPUBindGroup;
   private depth!: GPUTexture;
   private orbit!: OrbitCamera;
+  private scene!: FluidScene;
 
-  private vertex!: GPUBuffer;
-  private index!: GPUBuffer;
-  private indexCount = 0;
   private cameraParams = {
-    fov: (45 * Math.PI) / 180,
+    fov: Math.PI / 2,
     near: 0.1,
-    far: 100,
+    far: 500,
     lookAt: [2.5, 2.0, 3.2],
     target: [0, 0, 0],
     up: [0, 1, 0],
-    distance: 7,
-    theta: Math.PI / 4,
-    phi: Math.PI / 3,
+    distance: 25,
+    theta: Math.PI / 2,
+    phi: Math.PI / 2,
   };
 
   constructor(
     device: GPUDevice,
     context: GPUCanvasContext,
     format: GPUTextureFormat,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
+    scene: FluidScene,
+    trans: TransformSystem
   ) {
     this.device = device;
     this.context = context;
-    this.transformMatrix = new TransformSystem(device);
+    this.scene = scene;
+    this.transformMatrix = trans;
     this.format = format;
     this.orbit = new OrbitCamera(canvas, {
       distance: this.cameraParams.distance,
@@ -50,7 +49,6 @@ export class Renderer {
 
   async init() {
     this.createDepth();
-
     const aspect =
       this.context.getCurrentTexture().width /
       this.context.getCurrentTexture().height;
@@ -70,38 +68,6 @@ export class Renderer {
     );
     this.transformMatrix.setModel(mat4.create());
     this.transformMatrix.update();
-
-    const geo = createCubeGeometry(this.device);
-    this.vertex = geo.vertexBuffer;
-    this.index = geo.indexBuffer;
-    this.indexCount = geo.indexCount;
-
-    const module = this.device.createShaderModule({
-      code: cubeShader,
-    });
-
-    this.pipeline = this.device.createRenderPipeline({
-      layout: "auto",
-      vertex: { module, entryPoint: "vs_main", buffers: [geo.layout] },
-      fragment: {
-        module,
-        entryPoint: "fs_main",
-        targets: [{ format: this.format }],
-      },
-      primitive: { topology: "triangle-list" },
-      depthStencil: {
-        format: "depth24plus",
-        depthWriteEnabled: true,
-        depthCompare: "less",
-      },
-    });
-
-    this.bindGroup = this.device.createBindGroup({
-      layout: this.pipeline.getBindGroupLayout(0),
-      entries: [
-        { binding: 0, resource: { buffer: this.transformMatrix.getBuffer() } },
-      ],
-    });
   }
 
   private createDepth() {
@@ -159,11 +125,7 @@ export class Renderer {
         depthStoreOp: "store",
       },
     });
-    pass.setPipeline(this.pipeline);
-    pass.setBindGroup(0, this.bindGroup);
-    pass.setVertexBuffer(0, this.vertex);
-    pass.setIndexBuffer(this.index, "uint16");
-    pass.drawIndexed(this.indexCount);
+    this.scene.draw(pass);
     pass.end();
     this.device.queue.submit([encoder.finish()]);
   }

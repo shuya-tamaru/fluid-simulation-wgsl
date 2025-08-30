@@ -19,8 +19,8 @@ export class OrbitCamera {
 
   private target = vec3.fromValues(0, 0, 0);
   private dist = 4;
-  private minDist = 0.8;
-  private maxDist = 20;
+  private minDist = 0.1;
+  private maxDist = 80;
   private theta = Math.PI / 4;
   private phi = Math.PI / 3;
   private rotSpeed = 3.0;
