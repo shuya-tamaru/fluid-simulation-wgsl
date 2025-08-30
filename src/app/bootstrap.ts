@@ -8,21 +8,29 @@ import { FluidScene } from "../scenes/FluidScene";
 import { FluidGui } from "../utils/FluidGui";
 
 export async function bootstrap() {
+  //canvas
   const canvas = document.querySelector<HTMLCanvasElement>("#app");
   if (!canvas) throw new Error("canvas not found");
-
   sizeCanvas(canvas);
 
+  //initialize device
   const { device, context, format } = await Device.init(canvas);
+
+  //params
   const trans = new TransformSystem(device);
-  const params = new SphParams(32, 4, 16, 10000);
+  const params = new SphParams(device, 32, 4, 16, 10000);
 
+  //scene
   const scene = new FluidScene(device, format, trans, params);
-  const gui = new FluidGui(scene, params);
 
+  //gui
+  new FluidGui(scene, params);
+
+  //renderer
   const renderer = new Renderer(device, context, format, canvas, scene, trans);
   await renderer.init();
 
+  //resize
   attachResize(canvas, (w, h) => {
     renderer.onResize(w, h);
   });
@@ -33,6 +41,7 @@ export async function bootstrap() {
   document.body.appendChild(stats.dom);
   let last = performance.now();
 
+  //requestAnimationFrame
   const loop = (t: number) => {
     stats?.begin();
 

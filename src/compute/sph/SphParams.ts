@@ -1,4 +1,5 @@
 export class SphParams {
+  private device: GPUDevice;
   //SPH parameters
   public h = 1.0;
   public cellSize = this.h;
@@ -36,12 +37,16 @@ export class SphParams {
   public yMax!: number;
   public zMax!: number;
 
+  private sphParamsBuffer!: GPUBuffer;
+
   constructor(
+    device: GPUDevice,
     boxWidth: number,
     boxHeight: number,
     boxDepth: number,
     particleCount: number
   ) {
+    this.device = device;
     this.boxWidth = boxWidth;
     this.boxHeight = boxHeight;
     this.boxDepth = boxDepth;
@@ -49,6 +54,7 @@ export class SphParams {
 
     this.recalcBounds();
     this.recalcGrid();
+    this.createBuffer();
   }
 
   setBox(w: number, h: number, d: number) {
@@ -100,5 +106,28 @@ export class SphParams {
     u[uo++] = this.cellCountZ >>> 0;
 
     return { floats: f, uints: u };
+  }
+
+  private createBuffer() {
+    const { floats, uints } = this.toUniformArray();
+
+    this.sphParamsBuffer = this.device.createBuffer({
+      size: floats.byteLength + uints.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    this.device.queue.writeBuffer(this.sphParamsBuffer, 0, floats);
+    this.device.queue.writeBuffer(
+      this.sphParamsBuffer,
+      floats.byteLength,
+      uints
+    );
+  }
+
+  getBuffer() {
+    return this.sphParamsBuffer;
+  }
+
+  dispose() {
+    this.sphParamsBuffer.destroy();
   }
 }
