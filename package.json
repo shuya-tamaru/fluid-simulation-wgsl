@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "gl-matrix": "^3.4.4",
+    "lil-gui": "^0.20.0",
     "rollup-plugin-string": "^3.0.0",
     "stats.js": "^0.17.0"
   }

@@ -5,6 +5,7 @@ import { attachResize, sizeCanvas } from "./resize";
 import { SphParams } from "../compute/sph/SphParams";
 import { TransformSystem } from "../utils/TransformSystem";
 import { FluidScene } from "../scenes/FluidScene";
+import { FluidGui } from "../utils/FluidGui";
 
 export async function bootstrap() {
   const canvas = document.querySelector<HTMLCanvasElement>("#app");
@@ -17,6 +18,7 @@ export async function bootstrap() {
   const params = new SphParams(32, 4, 16, 10000);
 
   const scene = new FluidScene(device, format, trans, params);
+  const gui = new FluidGui(scene, params);
 
   const renderer = new Renderer(device, context, format, canvas, scene, trans);
   await renderer.init();
@@ -25,6 +27,7 @@ export async function bootstrap() {
     renderer.onResize(w, h);
   });
 
+  // stats
   const stats = new Stats();
   stats.showPanel(0);
   document.body.appendChild(stats.dom);

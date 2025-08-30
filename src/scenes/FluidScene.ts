@@ -31,6 +31,13 @@ export class FluidScene {
     );
   }
 
+  updateBoxSize(w: number, h: number, d: number) {
+    //prettier-ignore
+    this.wireBox.setSize({w,h,d});
+  }
+
+  resetSimulation() {}
+
   draw(pass: GPURenderPassEncoder) {
     this.wireBox.draw(pass);
   }

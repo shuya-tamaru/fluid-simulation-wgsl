@@ -9,7 +9,7 @@ export class WireBox {
   private vertexBuffer!: GPUBuffer;
   private indexBuffer!: GPUBuffer;
   private transformBuffer: GPUBuffer;
-  private size: { w: number; h: number; d: number };
+  private sphParams: SphParams;
   private bindGroup!: GPUBindGroup;
   private indexCount = 24;
 
@@ -22,16 +22,16 @@ export class WireBox {
     this.device = device;
     this.format = format;
     this.transformBuffer = transformBuffer;
-    this.size = {
-      w: sphParams.boxWidth,
-      h: sphParams.boxHeight,
-      d: sphParams.boxDepth,
-    };
+    this.sphParams = sphParams;
     this.init();
   }
 
   private init() {
-    const { vertices, indices } = createGeometry(this.size);
+    const { vertices, indices } = createGeometry({
+      w: this.sphParams.boxWidth,
+      h: this.sphParams.boxHeight,
+      d: this.sphParams.boxDepth,
+    });
 
     this.vertexBuffer = this.device.createBuffer({
       size: vertices.byteLength,
