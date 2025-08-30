@@ -1,0 +1,22 @@
+{
+  "name": "wgsl-template",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/stats.js": "^0.17.4",
+    "@webgpu/types": "^0.1.64",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.2"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.4",
+    "rollup-plugin-string": "^3.0.0",
+    "stats.js": "^0.17.0"
+  }
+}
