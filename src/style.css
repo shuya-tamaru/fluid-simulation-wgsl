@@ -4,10 +4,217 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #ffffff;
 }
 
 canvas {
   display: block;
   width: 100vw;
   height: 100vh;
+}
+
+/* WebGPU エラー画面 */
+.webgpu-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.error-container {
+  max-width: 600px;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  margin: auto;
+  width: calc(100% - 2rem);
+  max-height: none;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  color: #ff6b6b;
+}
+
+.error-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.error-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #cccccc;
+}
+
+.browser-list {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.browser-list h3 {
+  margin: 0 0 1rem 0;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.browser-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.browser-item:last-child {
+  margin-bottom: 0;
+}
+
+.browser-item span {
+  margin-left: 0.5rem;
+  color: #e0e0e0;
+}
+
+.refresh-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin-top: 1rem;
+}
+
+.refresh-button:hover {
+  transform: translateY(-2px);
+}
+
+.refresh-button:active {
+  transform: translateY(0);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .webgpu-error {
+    align-items: flex-start;
+    padding: 1rem 0;
+  }
+
+  .error-container {
+    padding: 1.5rem;
+    margin: 1rem auto;
+    width: calc(100% - 2rem);
+  }
+
+  .error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .error-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .error-description {
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .browser-list {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .browser-list h3 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .browser-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .browser-item span {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .webgpu-error {
+    padding: 0.5rem 0;
+  }
+
+  .error-container {
+    padding: 1rem;
+    margin: 0.5rem auto;
+    width: calc(100% - 1rem);
+  }
+
+  .error-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .error-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .error-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .browser-list {
+    padding: 0.75rem;
+    margin: 0.8rem 0;
+  }
+
+  .browser-list h3 {
+    font-size: 0.9rem;
+  }
+
+  .browser-item {
+    padding: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .browser-item span {
+    font-size: 0.75rem;
+  }
+
+  .refresh-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
 }

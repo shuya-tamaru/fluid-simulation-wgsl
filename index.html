@@ -4,10 +4,48 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>WebGPU Fluid Simulation</title>
   </head>
   <body>
-    <canvas id="app" />
+    <canvas id="app"></canvas>
+
+    <!-- WebGPU エラー画面 -->
+    <div id="webgpu-error" class="webgpu-error" style="display: none">
+      <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1 class="error-title">WebGPU Not Supported</h1>
+        <p class="error-description">
+          This application requires WebGPU to run. Please use a compatible
+          browser or enable WebGPU support.
+        </p>
+
+        <div class="browser-list">
+          <h3>📱 Compatible Browsers:</h3>
+          <div class="browser-item">
+            <strong>🌐 Chrome 113+</strong>
+            <span>Desktop & Android</span>
+          </div>
+          <div class="browser-item">
+            <strong>📘 Edge 113+</strong>
+            <span>Desktop</span>
+          </div>
+          <div class="browser-item">
+            <strong>🦊 Firefox Nightly</strong>
+            <span>With WebGPU enabled</span>
+          </div>
+        </div>
+
+        <p class="error-description">
+          <strong>💡 Enable in Chrome/Edge:</strong><br />
+          <code>chrome://flags/#enable-unsafe-webgpu</code>
+        </p>
+
+        <button class="refresh-button" onclick="window.location.reload()">
+          🔄 Retry
+        </button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
