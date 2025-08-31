@@ -4,20 +4,13 @@ import { SphParams } from "../compute/sph/SphParams";
 import { SphSimulator } from "../compute/sph/SphSimulator";
 
 export class FluidGui {
-  private device: GPUDevice;
   private gui: GUI;
   private scene: FluidScene;
   private simulator: SphSimulator;
   private params: SphParams;
 
-  constructor(
-    device: GPUDevice,
-    scene: FluidScene,
-    params: SphParams,
-    simulator: SphSimulator
-  ) {
+  constructor(scene: FluidScene, params: SphParams, simulator: SphSimulator) {
     this.gui = new GUI({ title: "Fluid Controls" });
-    this.device = device;
     this.scene = scene;
     this.simulator = simulator;
     this.params = params;

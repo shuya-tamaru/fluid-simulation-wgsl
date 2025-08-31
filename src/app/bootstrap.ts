@@ -32,7 +32,7 @@ export async function bootstrap() {
   const scene = new FluidScene(wireBox, particles);
 
   //gui
-  new FluidGui(device, scene, params, simulator);
+  new FluidGui(scene, params, simulator);
 
   //renderer
   const renderer = new Renderer(
@@ -44,6 +44,7 @@ export async function bootstrap() {
     simulator,
     trans
   );
+
   await renderer.init();
 
   //resize

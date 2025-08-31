@@ -34,7 +34,6 @@ struct SpatialParams {
   _pad1: u32,
   _pad2: u32,
   _pad3: u32,
-
 };
 
 @group(0) @binding(0) var<storage, read> positions: array<vec4<f32>>;

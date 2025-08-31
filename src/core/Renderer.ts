@@ -140,7 +140,7 @@ export class Renderer {
 
     //debug
     // this.debug(
-    //   this.simulator.getInstance().gridCell.getCellCountsBuffer(),
+    //   this.simulator.getInstance().startGridIndices.getCellStartIndicesBuffer(),
     //   "uint32"
     // );
   }
