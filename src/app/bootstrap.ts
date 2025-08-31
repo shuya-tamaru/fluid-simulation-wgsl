@@ -38,7 +38,6 @@ export async function bootstrap() {
   const renderer = new Renderer(
     device,
     context,
-    format,
     canvas,
     scene,
     simulator,

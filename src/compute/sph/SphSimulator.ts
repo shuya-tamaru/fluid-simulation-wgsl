@@ -1,5 +1,6 @@
 import { Particles } from "../../gfx/Particles";
 import { GridCell } from "./GridCell";
+import { Scatter } from "./Scatter";
 import { SphParams } from "./SphParams";
 import { StartGridIndices } from "./StartGridIndices";
 
@@ -8,6 +9,7 @@ export class SphSimulator {
   private sphParams: SphParams;
   private gridCell!: GridCell;
   private startGridIndices!: StartGridIndices;
+  private scatter!: Scatter;
   private particles!: Particles;
 
   constructor(device: GPUDevice, sphParams: SphParams, particles: Particles) {
@@ -24,12 +26,19 @@ export class SphSimulator {
       this.gridCell,
       this.sphParams
     );
+    this.scatter = new Scatter(
+      this.device,
+      this.gridCell,
+      this.startGridIndices,
+      this.sphParams
+    );
   }
 
   getInstance() {
     return {
       gridCell: this.gridCell,
       startGridIndices: this.startGridIndices,
+      scatter: this.scatter,
       particles: this.particles,
     };
   }
@@ -38,12 +47,15 @@ export class SphSimulator {
     this.gridCell.resetCellCounts();
     this.gridCell.buildIndex(encoder);
     this.startGridIndices.buildIndex(encoder);
+    this.scatter.buildIndex(encoder);
   }
 
   resetSimulation() {
     this.gridCell.destroy();
     this.startGridIndices.destroy();
+    this.scatter.destroy();
     this.gridCell.init();
     this.startGridIndices.init();
+    this.scatter.init();
   }
 }

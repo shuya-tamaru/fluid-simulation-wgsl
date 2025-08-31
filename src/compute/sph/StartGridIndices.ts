@@ -100,11 +100,6 @@ export class StartGridIndices {
     return this.cellStartIndicesBuffer;
   }
 
-  resetSimulation() {
-    this.destroy();
-    this.init();
-  }
-
   destroy() {
     this.cellStartIndicesBuffer.destroy();
   }

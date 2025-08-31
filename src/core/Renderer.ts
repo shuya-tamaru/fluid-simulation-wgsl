@@ -8,10 +8,8 @@ import { debugReadBuffer } from "../utils/debugReadBuffer";
 export class Renderer {
   private device: GPUDevice;
   private context: GPUCanvasContext;
-  private format: GPUTextureFormat;
   private transformMatrix: TransformSystem;
 
-  private pipeline!: GPURenderPipeline;
   private depth!: GPUTexture;
   private orbit!: OrbitCamera;
   private scene!: FluidScene;
@@ -31,7 +29,6 @@ export class Renderer {
   constructor(
     device: GPUDevice,
     context: GPUCanvasContext,
-    format: GPUTextureFormat,
     canvas: HTMLCanvasElement,
     scene: FluidScene,
     simulator: SphSimulator,
@@ -42,7 +39,6 @@ export class Renderer {
     this.scene = scene;
     this.simulator = simulator;
     this.transformMatrix = trans;
-    this.format = format;
     this.orbit = new OrbitCamera(canvas, {
       distance: this.cameraParams.distance,
       theta: this.cameraParams.theta,
@@ -140,7 +136,7 @@ export class Renderer {
 
     //debug
     // this.debug(
-    //   this.simulator.getInstance().startGridIndices.getCellStartIndicesBuffer(),
+    //   this.simulator.getInstance().scatter.getCellOffsetsBuffer(),
     //   "uint32"
     // );
   }
