@@ -1,15 +1,25 @@
 import GUI from "lil-gui";
 import { FluidScene } from "../scenes/FluidScene";
-import type { SphParams } from "../compute/sph/SphParams";
+import { SphParams } from "../compute/sph/SphParams";
+import { SphSimulator } from "../compute/sph/SphSimulator";
 
 export class FluidGui {
+  private device: GPUDevice;
   private gui: GUI;
   private scene: FluidScene;
+  private simulator: SphSimulator;
   private params: SphParams;
 
-  constructor(scene: FluidScene, params: SphParams) {
+  constructor(
+    device: GPUDevice,
+    scene: FluidScene,
+    params: SphParams,
+    simulator: SphSimulator
+  ) {
     this.gui = new GUI({ title: "Fluid Controls" });
+    this.device = device;
     this.scene = scene;
+    this.simulator = simulator;
     this.params = params;
     this.init();
   }
@@ -44,9 +54,20 @@ export class FluidGui {
       .add(this.params, "particleCount", 5000, 30000, 5000)
       .name("Sphere Count")
       .onChange((v: number) => {
-        this.params.particleCount = v;
+        this.reCreateParams(v);
+        this.resetSimulation();
         this.scene.resetSimulation();
       });
+  }
+
+  reCreateParams(v: number) {
+    this.params.dispose();
+    this.params.setParticleCount(v);
+    this.params.init();
+  }
+
+  resetSimulation() {
+    this.simulator.resetSimulation();
   }
 
   dispose() {

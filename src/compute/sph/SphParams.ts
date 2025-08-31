@@ -53,6 +53,10 @@ export class SphParams {
     this.boxDepth = boxDepth;
     this.particleCount = particleCount;
 
+    this.init();
+  }
+
+  init() {
     this.recalcBounds();
     this.recalcGrid();
     this.createBuffer();

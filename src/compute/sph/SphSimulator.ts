@@ -27,6 +27,11 @@ export class SphSimulator {
   }
 
   compute(encoder: GPUCommandEncoder) {
+    this.gridCell.resetCellCounts();
     this.gridCell.buildIndex(encoder);
+  }
+
+  resetSimulation() {
+    this.gridCell.resetSimulation();
   }
 }

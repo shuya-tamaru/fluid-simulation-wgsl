@@ -139,6 +139,11 @@ export class GridCell {
     this.device.queue.writeBuffer(this.cellCountsBuffer, 0, cellCounts);
   }
 
+  resetSimulation() {
+    this.destroy();
+    this.init();
+  }
+
   destroy() {
     this.cellIndicesBuffer.destroy();
     this.cellCountsBuffer.destroy();

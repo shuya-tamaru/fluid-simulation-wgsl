@@ -139,7 +139,10 @@ export class Renderer {
     this.device.queue.submit([encoder.finish()]);
 
     //debug
-    // this.debug(this.simulator.gridCell.getCellCountsBuffer());
+    // this.debug(
+    //   this.simulator.getInstance().gridCell.getCellCountsBuffer(),
+    //   "uint32"
+    // );
   }
 
   debug(buffer: GPUBuffer, type: "uint32" | "float32") {
@@ -147,10 +150,10 @@ export class Renderer {
       .onSubmittedWorkDone()
       .then(() => debugReadBuffer(this.device, buffer, buffer.size))
       .then((data) => {
-        const float32View = new (
-          type === "uint32" ? Uint32Array : Float32Array
-        )(data);
-        console.log(float32View);
+        const dataView = new (type === "uint32" ? Uint32Array : Float32Array)(
+          data
+        );
+        console.log(dataView);
       });
   }
 }

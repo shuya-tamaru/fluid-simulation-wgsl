@@ -32,7 +32,7 @@ export async function bootstrap() {
   const scene = new FluidScene(wireBox, particles);
 
   //gui
-  new FluidGui(scene, params);
+  new FluidGui(device, scene, params, simulator);
 
   //renderer
   const renderer = new Renderer(
