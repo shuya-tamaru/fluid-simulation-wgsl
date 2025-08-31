@@ -60,7 +60,6 @@ export async function bootstrap() {
   const stats = new Stats();
   stats.showPanel(0);
   document.body.appendChild(stats.dom);
-  let last = performance.now();
 
   //requestAnimationFrame
   const loop = (t: number) => {
