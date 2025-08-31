@@ -4,11 +4,20 @@
 
 WebGPU と WGSL（WebGPU Shading Language）を使用したリアルタイム SPH（Smoothed Particle Hydrodynamics）流体シミュレーションです。
 
-## デモ
+## 🚀 ライブデモ & 動画
 
-[![動作デモ](https://img.youtube.com/vi/hxalb1aCo4g/maxresdefault.jpg)](https://youtu.be/hxalb1aCo4g)
+<div align="center">
 
-**▲ 画像をクリックして動作状況を YouTube で見る**
+### [🌊 **ライブデモを試す**](https://sph-wgsl.vercel.app/) | [📺 **動画を見る**](https://youtu.be/hxalb1aCo4g)
+
+[![ライブデモ](https://img.shields.io/badge/🌊_ライブデモ-インタラクティブ-4285f4?style=for-the-badge&logo=webcomponents&logoColor=white)](https://sph-wgsl.vercel.app/)
+[![YouTube デモ](https://img.shields.io/badge/📺_YouTube-デモ動画-red?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/hxalb1aCo4g)
+
+[![デモプレビュー](https://img.youtube.com/vi/hxalb1aCo4g/maxresdefault.jpg)](https://youtu.be/hxalb1aCo4g)
+
+_上の画像をクリックして詳細デモをご覧ください_
+
+</div>
 
 ## 特徴
 
