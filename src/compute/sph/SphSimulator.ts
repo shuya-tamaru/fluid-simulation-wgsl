@@ -1,5 +1,6 @@
 import { Particles } from "../../gfx/Particles";
 import { GridCell } from "./GridCell";
+import { ReOrderParticles } from "./ReorderParticles";
 import { Scatter } from "./Scatter";
 import { SphParams } from "./SphParams";
 import { StartGridIndices } from "./StartGridIndices";
@@ -10,6 +11,7 @@ export class SphSimulator {
   private gridCell!: GridCell;
   private startGridIndices!: StartGridIndices;
   private scatter!: Scatter;
+  private reorderParticles!: ReOrderParticles;
   private particles!: Particles;
 
   constructor(device: GPUDevice, sphParams: SphParams, particles: Particles) {
@@ -32,6 +34,12 @@ export class SphSimulator {
       this.startGridIndices,
       this.sphParams
     );
+    this.reorderParticles = new ReOrderParticles(
+      this.device,
+      this.sphParams,
+      this.scatter,
+      this.particles
+    );
   }
 
   getInstance() {
@@ -39,6 +47,7 @@ export class SphSimulator {
       gridCell: this.gridCell,
       startGridIndices: this.startGridIndices,
       scatter: this.scatter,
+      reorderParticles: this.reorderParticles,
       particles: this.particles,
     };
   }
@@ -48,6 +57,7 @@ export class SphSimulator {
     this.gridCell.buildIndex(encoder);
     this.startGridIndices.buildIndex(encoder);
     this.scatter.buildIndex(encoder);
+    this.reorderParticles.buildIndex(encoder);
   }
 
   resetSimulation() {
