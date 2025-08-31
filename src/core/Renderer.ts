@@ -88,7 +88,7 @@ export class Renderer {
     });
   }
 
-  update(dt: number) {
+  update() {
     this.transformMatrix.setView(this.orbit.getView());
     this.transformMatrix.update();
   }

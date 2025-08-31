@@ -69,7 +69,7 @@ export async function bootstrap() {
     const dt = (t - last) * 0.001;
     last = t;
     timeStep.set(dt);
-    renderer.update(dt);
+    renderer.update();
     renderer.render();
 
     stats?.end();
