@@ -11,10 +11,10 @@ struct PhysicsParams {
   restDensity: f32,
   pressureStiffness: f32,
   viscosityMu: f32,
-  tangentDamping: f32,
   restitution: f32,
   _pad0: f32,
   _pad1: f32,
+  _pad2: f32,
 };
 
 struct SpatialParams {

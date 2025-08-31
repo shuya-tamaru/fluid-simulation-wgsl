@@ -16,7 +16,6 @@ export class SphParams {
   public restDensity = 0.8;
   public pressureStiffness = 100;
   public viscosityMu = 0.12;
-  public tangentDamping = 0.1;
   public restitution = 0.1;
 
   //neighborhood search
@@ -108,12 +107,11 @@ export class SphParams {
     f[i++] = this.restDensity;
     f[i++] = this.pressureStiffness;
     f[i++] = this.viscosityMu;
-    f[i++] = this.tangentDamping;
     f[i++] = this.restitution;
 
     f[i++] = 0; // padding
     f[i++] = 0; // padding
-
+    f[i++] = 0; // padding
     return f;
   }
 

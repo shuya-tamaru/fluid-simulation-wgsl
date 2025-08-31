@@ -1,4 +1,6 @@
 import { Particles } from "../../gfx/Particles";
+import { TimeStep } from "../../utils/TimeStep";
+import { Gravity } from "./Gravity";
 import { GridCell } from "./GridCell";
 import { ParticlePingPong } from "./ParticlePingPong";
 import { ReOrderParticles } from "./ReorderParticles";
@@ -14,12 +16,20 @@ export class SphSimulator {
   private scatter!: Scatter;
   private reorderParticles!: ReOrderParticles;
   private particlePingPong!: ParticlePingPong;
+  private gravity!: Gravity;
   private particles!: Particles;
+  private timeStep!: TimeStep;
 
-  constructor(device: GPUDevice, sphParams: SphParams, particles: Particles) {
+  constructor(
+    device: GPUDevice,
+    sphParams: SphParams,
+    particles: Particles,
+    timeStep: TimeStep
+  ) {
     this.device = device;
     this.sphParams = sphParams;
     this.particles = particles;
+    this.timeStep = timeStep;
     this.init();
   }
 
@@ -47,6 +57,12 @@ export class SphSimulator {
       this.sphParams,
       this.particles
     );
+    this.gravity = new Gravity(
+      this.device,
+      this.sphParams,
+      this.timeStep,
+      this.particles
+    );
   }
 
   getInstance() {
@@ -62,11 +78,14 @@ export class SphSimulator {
 
   compute(encoder: GPUCommandEncoder) {
     this.gridCell.resetCellCounts();
+    this.scatter.resetCellOffsets();
+
     this.gridCell.buildIndex(encoder);
     this.startGridIndices.buildIndex(encoder);
     this.scatter.buildIndex(encoder);
     this.reorderParticles.buildIndex(encoder);
-    // this.particlePingPong.buildIndex(encoder);
+    this.particlePingPong.buildIndex(encoder);
+    this.gravity.buildIndex(encoder);
   }
 
   resetSimulation() {

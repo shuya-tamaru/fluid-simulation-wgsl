@@ -20,13 +20,18 @@ export async function bootstrap() {
 
   //params
   const trans = new TransformSystem(device);
-  const params = new SphParams(device, 32, 4, 16, 10000);
+  const params = new SphParams(device, 32, 16, 16, 10000);
 
   //assets
-  const { wireBox, particles } = createAssets(device, format, trans, params);
+  const { wireBox, particles, timeStep } = createAssets(
+    device,
+    format,
+    trans,
+    params
+  );
 
   //compute
-  const simulator = new SphSimulator(device, params, particles);
+  const simulator = new SphSimulator(device, params, particles, timeStep);
 
   //scene
   const scene = new FluidScene(wireBox, particles);
@@ -63,6 +68,7 @@ export async function bootstrap() {
 
     const dt = (t - last) * 0.001;
     last = t;
+    timeStep.set(dt);
     renderer.update(dt);
     renderer.render();
 

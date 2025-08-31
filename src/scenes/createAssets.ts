@@ -2,6 +2,7 @@ import type { SphParams } from "../compute/sph/SphParams";
 import { Particles } from "../gfx/Particles";
 import { SphereInstance } from "../gfx/SphereInstance";
 import { WireBox } from "../gfx/WireBox";
+import { TimeStep } from "../utils/TimeStep";
 import type { TransformSystem } from "../utils/TransformSystem";
 
 export function createAssets(
@@ -19,5 +20,6 @@ export function createAssets(
     sphParams,
     sphereInstance
   );
-  return { wireBox, sphereInstance, particles };
+  const timeStep = new TimeStep(device);
+  return { wireBox, sphereInstance, particles, timeStep };
 }

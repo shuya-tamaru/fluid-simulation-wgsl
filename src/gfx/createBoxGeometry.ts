@@ -10,12 +10,11 @@ export function createGeometry({
   const hx = w * 0.5;
   const hy = h * 0.5;
   const hz = d * 0.5;
-  const upperOffset = 12.0;
 
   // prettier-ignore
   const v = new Float32Array([
-    -hx,-hy,-hz,0,   +hx,-hy,-hz,0,   +hx,+hy+upperOffset,-hz,0,   -hx,+hy+upperOffset,-hz,0, // 0..3 (near)
-    -hx,-hy,+hz,0,   +hx,-hy,+hz,0,   +hx,+hy+upperOffset,+hz,0,   -hx,+hy+upperOffset,+hz,0, // 4..7 (far)
+    -hx,-hy,-hz,0,   +hx,-hy,-hz,0,   +hx,+hy,-hz,0,   -hx,+hy,-hz,0, // 0..3 (near)
+    -hx,-hy,+hz,0,   +hx,-hy,+hz,0,   +hx,+hy,+hz,0,   -hx,+hy,+hz,0, // 4..7 (far)
   ]);
 
   // prettier-ignore
