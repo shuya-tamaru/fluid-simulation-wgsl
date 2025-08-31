@@ -5,6 +5,7 @@ import { Gravity } from "./Gravity";
 import { GridCell } from "./GridCell";
 import { ParticlePingPong } from "./ParticlePingPong";
 import { Pressure } from "./Pressure";
+import { PressureForce } from "./PressureForce";
 import { ReOrderParticles } from "./ReorderParticles";
 import { Scatter } from "./Scatter";
 import { SphParams } from "./SphParams";
@@ -24,6 +25,7 @@ export class SphSimulator {
   private gravity!: Gravity;
   private density!: Density;
   private pressure!: Pressure;
+  private pressureForce!: PressureForce;
 
   constructor(
     device: GPUDevice,
@@ -81,6 +83,15 @@ export class SphSimulator {
       this.sphParams,
       this.density
     );
+    this.pressureForce = new PressureForce(
+      this.device,
+      this.particles,
+      this.density,
+      this.pressure,
+      this.gridCell,
+      this.startGridIndices,
+      this.sphParams
+    );
   }
 
   getInstance() {
@@ -93,6 +104,7 @@ export class SphSimulator {
       particlePingPong: this.particlePingPong,
       density: this.density,
       pressure: this.pressure,
+      pressureForce: this.pressureForce,
     };
   }
 
@@ -112,6 +124,7 @@ export class SphSimulator {
     this.gravity.buildIndex(encoder);
     this.density.buildIndex(encoder);
     this.pressure.buildIndex(encoder);
+    this.pressureForce.buildIndex(encoder);
   }
 
   resetSimulation() {
@@ -120,11 +133,12 @@ export class SphSimulator {
     this.scatter.destroy();
     this.density.destroy();
     this.pressure.destroy();
-
+    this.pressureForce.destroy();
     this.gridCell.init();
     this.startGridIndices.init();
     this.scatter.init();
     this.density.init();
     this.pressure.init();
+    this.pressureForce.init();
   }
 }
