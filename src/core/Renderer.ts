@@ -136,8 +136,8 @@ export class Renderer {
 
     //debug
     // this.debug(
-    //   this.simulator.getInstance().scatter.getCellOffsetsBuffer(),
-    //   "uint32"
+    //   this.simulator.getInstance().particles.getPositionBufferIn(),
+    //   "float32"
     // );
   }
 
