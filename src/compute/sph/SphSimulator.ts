@@ -1,5 +1,6 @@
 import { Particles } from "../../gfx/Particles";
 import { TimeStep } from "../../utils/TimeStep";
+import { Density } from "./Density";
 import { Gravity } from "./Gravity";
 import { GridCell } from "./GridCell";
 import { ParticlePingPong } from "./ParticlePingPong";
@@ -10,15 +11,17 @@ import { StartGridIndices } from "./StartGridIndices";
 
 export class SphSimulator {
   private device: GPUDevice;
+  private particles!: Particles;
+  private timeStep!: TimeStep;
   private sphParams: SphParams;
+
   private gridCell!: GridCell;
   private startGridIndices!: StartGridIndices;
   private scatter!: Scatter;
   private reorderParticles!: ReOrderParticles;
   private particlePingPong!: ParticlePingPong;
   private gravity!: Gravity;
-  private particles!: Particles;
-  private timeStep!: TimeStep;
+  private density!: Density;
 
   constructor(
     device: GPUDevice,
@@ -63,6 +66,13 @@ export class SphSimulator {
       this.timeStep,
       this.particles
     );
+    this.density = new Density(
+      this.device,
+      this.sphParams,
+      this.particles,
+      this.gridCell,
+      this.startGridIndices
+    );
   }
 
   getInstance() {
@@ -73,7 +83,12 @@ export class SphSimulator {
       reorderParticles: this.reorderParticles,
       particles: this.particles,
       particlePingPong: this.particlePingPong,
+      density: this.density,
     };
+  }
+
+  updateSphParams(w: number, d: number) {
+    this.sphParams.updateSphParams(w, d);
   }
 
   compute(encoder: GPUCommandEncoder) {
@@ -86,14 +101,18 @@ export class SphSimulator {
     this.reorderParticles.buildIndex(encoder);
     this.particlePingPong.buildIndex(encoder);
     this.gravity.buildIndex(encoder);
+    this.density.buildIndex(encoder);
   }
 
   resetSimulation() {
     this.gridCell.destroy();
     this.startGridIndices.destroy();
     this.scatter.destroy();
+    this.density.destroy();
+
     this.gridCell.init();
     this.startGridIndices.init();
     this.scatter.init();
+    this.density.init();
   }
 }

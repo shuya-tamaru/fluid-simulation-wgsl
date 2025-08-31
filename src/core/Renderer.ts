@@ -136,7 +136,7 @@ export class Renderer {
 
     //debug
     // this.debug(
-    //   this.simulator.getInstance().particles.getPositionBufferIn(),
+    //   this.simulator.getInstance().density.getDensityBuffer(),
     //   "float32"
     // );
   }

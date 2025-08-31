@@ -24,6 +24,7 @@ export class FluidGui {
       .onChange((v: number) => {
         this.params.boxWidth = v;
         //bufferの更新
+        this.simulator.updateSphParams(v, this.params.boxDepth);
 
         // WireBoxのサイズも更新
         this.scene.updateBoxSize(
@@ -37,6 +38,7 @@ export class FluidGui {
       .name("Box Depth")
       .onChange((v: number) => {
         this.params.boxDepth = v;
+        this.simulator.updateSphParams(this.params.boxWidth, v);
         this.scene.updateBoxSize(
           this.params.boxWidth,
           this.params.boxHeight,

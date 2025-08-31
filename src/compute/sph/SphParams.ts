@@ -171,6 +171,20 @@ export class SphParams {
     );
   }
 
+  updateSphParams(w: number, d: number) {
+    this.boxWidth = w;
+    this.boxDepth = d;
+
+    const { floats: f_spatial, uints: uints_spatial } = this.getSpatialConfig();
+
+    this.device.queue.writeBuffer(this.spatialParamsBuffer, 0, f_spatial);
+    this.device.queue.writeBuffer(
+      this.spatialParamsBuffer,
+      f_spatial.byteLength,
+      uints_spatial
+    );
+  }
+
   getBufferPhysics() {
     return this.physicsParamsBuffer;
   }
