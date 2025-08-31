@@ -1,6 +1,5 @@
 import { WireBox } from "../gfx/WireBox";
 import { Particles } from "../gfx/Particles";
-import { SphereInstance } from "../gfx/SphereInstance";
 
 export class FluidScene {
   private wireBox!: WireBox;

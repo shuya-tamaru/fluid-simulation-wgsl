@@ -37,7 +37,8 @@ export class SphParams {
   public yMax!: number;
   public zMax!: number;
 
-  private sphParamsBuffer!: GPUBuffer;
+  private physicsParamsBuffer!: GPUBuffer;
+  private spatialParamsBuffer!: GPUBuffer;
 
   constructor(
     device: GPUDevice,
@@ -86,48 +87,97 @@ export class SphParams {
     this.totalCellCount = this.cellCountX * this.cellCountY * this.cellCountZ;
   }
 
-  toUniformArray() {
-    // floats
-    const f = new Float32Array(6);
-    let fo = 0;
-    f[fo++] = this.h;
-    f[fo++] = this.restDensity;
-    f[fo++] = this.pressureStiffness;
-    f[fo++] = this.viscosityMu;
-    f[fo++] = this.mass;
-    f[fo++] = this.cellSize;
+  private getPhysicsParams() {
+    const f = new Float32Array(16);
+    let i = 0;
+    f[i++] = this.h;
+    f[i++] = this.h2;
+    f[i++] = this.h3;
+    f[i++] = this.h6;
+    f[i++] = this.h9;
 
-    // integers（← u32 想定。Int32Array ではなく Uint32Array を使う）
-    const u = new Uint32Array(4);
-    let uo = 0;
-    u[uo++] = this.particleCount >>> 0;
-    u[uo++] = this.cellCountX >>> 0;
-    u[uo++] = this.cellCountY >>> 0;
-    u[uo++] = this.cellCountZ >>> 0;
+    f[i++] = this.poly6;
+    f[i++] = this.spiky;
+    f[i++] = this.viscosity;
+
+    f[i++] = this.mass;
+    f[i++] = this.restDensity;
+    f[i++] = this.pressureStiffness;
+    f[i++] = this.viscosityMu;
+    f[i++] = this.tangentDamping;
+    f[i++] = this.restitution;
+
+    f[i++] = 0; // padding
+    f[i++] = 0; // padding
+
+    return f;
+  }
+
+  private getSpatialConfig() {
+    // floats
+    const f = new Float32Array(8);
+    let fi = 0;
+    f[fi++] = this.cellSize;
+    f[fi++] = this.xMin;
+    f[fi++] = this.yMin;
+    f[fi++] = this.zMin;
+    f[fi++] = this.boxWidth;
+    f[fi++] = this.boxHeight;
+    f[fi++] = this.boxDepth;
+    f[fi++] = 0; // padding
+
+    // uints
+    const u = new Uint32Array(8);
+    let ui = 0;
+    u[ui++] = this.particleCount;
+    u[ui++] = this.cellCountX;
+    u[ui++] = this.cellCountY;
+    u[ui++] = this.cellCountZ;
+    u[ui++] = this.totalCellCount;
+    u[ui++] = 0; // padding
+    u[ui++] = 0; // padding
+    u[ui++] = 0; // padding
 
     return { floats: f, uints: u };
   }
 
   private createBuffer() {
-    const { floats, uints } = this.toUniformArray();
-
-    this.sphParamsBuffer = this.device.createBuffer({
-      size: floats.byteLength + uints.byteLength,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    const f_phys = this.getPhysicsParams();
+    const { floats: f_spatial, uints: uints_spatial } = this.getSpatialConfig();
+    this.physicsParamsBuffer = this.device.createBuffer({
+      size: f_phys.byteLength,
+      usage:
+        GPUBufferUsage.UNIFORM |
+        GPUBufferUsage.COPY_DST |
+        GPUBufferUsage.COPY_SRC,
     });
-    this.device.queue.writeBuffer(this.sphParamsBuffer, 0, floats);
+
+    this.spatialParamsBuffer = this.device.createBuffer({
+      size: f_spatial.byteLength + uints_spatial.byteLength,
+      usage:
+        GPUBufferUsage.UNIFORM |
+        GPUBufferUsage.COPY_DST |
+        GPUBufferUsage.COPY_SRC,
+    });
+
+    this.device.queue.writeBuffer(this.physicsParamsBuffer, 0, f_phys);
+    this.device.queue.writeBuffer(this.spatialParamsBuffer, 0, f_spatial);
     this.device.queue.writeBuffer(
-      this.sphParamsBuffer,
-      floats.byteLength,
-      uints
+      this.spatialParamsBuffer,
+      f_spatial.byteLength,
+      uints_spatial
     );
   }
 
-  getBuffer() {
-    return this.sphParamsBuffer;
+  getBufferPhysics() {
+    return this.physicsParamsBuffer;
+  }
+  getBufferSpatial() {
+    return this.spatialParamsBuffer;
   }
 
   dispose() {
-    this.sphParamsBuffer.destroy();
+    this.physicsParamsBuffer.destroy();
+    this.spatialParamsBuffer.destroy();
   }
 }

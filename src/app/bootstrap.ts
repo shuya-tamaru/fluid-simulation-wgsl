@@ -7,6 +7,7 @@ import { TransformSystem } from "../utils/TransformSystem";
 import { FluidScene } from "../scenes/FluidScene";
 import { FluidGui } from "../utils/FluidGui";
 import { createAssets } from "../scenes/createAssets";
+import { SphSimulator } from "../compute/sph/SphSimulator";
 
 export async function bootstrap() {
   //canvas
@@ -25,6 +26,7 @@ export async function bootstrap() {
   const { wireBox, particles } = createAssets(device, format, trans, params);
 
   //compute
+  const simulator = new SphSimulator(device, params, particles);
 
   //scene
   const scene = new FluidScene(wireBox, particles);
@@ -33,7 +35,15 @@ export async function bootstrap() {
   new FluidGui(scene, params);
 
   //renderer
-  const renderer = new Renderer(device, context, format, canvas, scene, trans);
+  const renderer = new Renderer(
+    device,
+    context,
+    format,
+    canvas,
+    scene,
+    simulator,
+    trans
+  );
   await renderer.init();
 
   //resize
