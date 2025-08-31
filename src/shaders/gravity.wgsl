@@ -66,24 +66,24 @@ fn cs_main(@builtin(global_invocation_id) global_id: vec3<u32>) {
       // X方向の境界判定
   if (abs(newPosition.x) > sp.boxWidth * 0.5) {
     newPosition.x = sp.boxWidth * 0.5 * sign(newPosition.x);
-    newVelocity.x *= -1.0 * (1.0-pp.restitution);
+    newVelocity.x *= -1.0 * (1.0 - pp.restitution);
   }
 
   //Y方向の境界判定
   if (newPosition.y > sp.boxHeight) {
     newPosition.y = sp.boxHeight * 0.5 * sign(newPosition.y);
-    newVelocity.y *= -1.0 * (1.0-pp.restitution);
+    newVelocity.y *= -1.0 * (1.0 - pp.restitution);
   }
   //Y方向の境界判定
   if (newPosition.y < -sp.boxHeight * 0.5) {
     newPosition.y = sp.boxHeight * 0.5 * sign(newPosition.y);
-    newVelocity.y *= -1.0 * (1.0-pp.restitution);
+    newVelocity.y *= -1.0 * (1.0 - pp.restitution);
   }
 
   // Z方向の境界判定（2Dなら不要だが一応）
   if (abs(newPosition.z) > sp.boxDepth * 0.5) {
     newPosition.z = sp.boxDepth * 0.5 * sign(newPosition.z);
-    newVelocity.z *= -1.0 * (1.0-pp.restitution);
+    newVelocity.z *= -1.0 * (1.0 - pp.restitution);
   }
 
 

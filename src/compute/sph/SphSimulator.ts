@@ -3,6 +3,7 @@ import { TimeStep } from "../../utils/TimeStep";
 import { Density } from "./Density";
 import { Gravity } from "./Gravity";
 import { GridCell } from "./GridCell";
+import { Integrate } from "./Integrate";
 import { ParticlePingPong } from "./ParticlePingPong";
 import { Pressure } from "./Pressure";
 import { PressureForce } from "./PressureForce";
@@ -28,6 +29,7 @@ export class SphSimulator {
   private pressure!: Pressure;
   private pressureForce!: PressureForce;
   private viscosity!: Viscosity;
+  private integrate!: Integrate;
 
   constructor(
     device: GPUDevice,
@@ -102,6 +104,14 @@ export class SphSimulator {
       this.gridCell,
       this.startGridIndices
     );
+    this.integrate = new Integrate(
+      this.device,
+      this.particles,
+      this.sphParams,
+      this.pressureForce,
+      this.viscosity,
+      this.timeStep
+    );
   }
 
   getInstance() {
@@ -116,6 +126,7 @@ export class SphSimulator {
       pressure: this.pressure,
       pressureForce: this.pressureForce,
       viscosity: this.viscosity,
+      integrate: this.integrate,
     };
   }
 
@@ -137,6 +148,7 @@ export class SphSimulator {
     this.pressure.buildIndex(encoder);
     this.pressureForce.buildIndex(encoder);
     this.viscosity.buildIndex(encoder);
+    this.integrate.buildIndex(encoder);
   }
 
   resetSimulation() {
@@ -154,5 +166,6 @@ export class SphSimulator {
     this.pressure.init();
     this.pressureForce.init();
     this.viscosity.init();
+    this.integrate.init();
   }
 }

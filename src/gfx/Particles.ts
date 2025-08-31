@@ -92,11 +92,12 @@ export class Particles {
     this.positions = new Float32Array(this.sphParams.particleCount * 4);
     this.velocities = new Float32Array(this.sphParams.particleCount * 4);
 
+    // y方向の初期位置はBoxの半分より下にする
     for (let i = 0; i < this.sphParams.particleCount; i++) {
       this.positions[i * 4 + 0] =
         (Math.random() - 0.5) * this.sphParams.boxWidth;
       this.positions[i * 4 + 1] =
-        (Math.random() - 0.5) * this.sphParams.boxHeight;
+        (Math.random() * 0.5 - 0.5) * this.sphParams.boxHeight;
       this.positions[i * 4 + 2] =
         (Math.random() - 0.5) * this.sphParams.boxDepth;
       this.positions[i * 4 + 3] = 0.0;

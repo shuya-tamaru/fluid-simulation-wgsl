@@ -66,7 +66,7 @@ export class SphParams {
     this.boxHeight = h;
     this.boxDepth = d;
     this.recalcBounds();
-    this.recalcGrid(); // セル数/総セル数を更新（グリッド用バッファ再確保のトリガ）
+    this.recalcGrid();
   }
 
   setParticleCount(n: number) {
