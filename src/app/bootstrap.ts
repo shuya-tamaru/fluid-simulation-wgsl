@@ -66,8 +66,7 @@ export async function bootstrap() {
   const loop = (t: number) => {
     stats?.begin();
 
-    const dt = (t - last) * 0.001;
-    last = t;
+    const dt = 1 / 60;
     timeStep.set(dt);
     renderer.update();
     renderer.render();
