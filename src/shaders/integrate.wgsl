@@ -62,10 +62,8 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3<u32>) {
   var pos = positions[i].xyz;
   var vel = velocities[i].xyz;
 
-  // Force → Accel に変換して合算（重力は加速度のまま）
   let Fp = pressureForces[i].xyz;
   let Fv = viscosityForces[i].xyz;
-  let g  = vec3<f32>(0.0, -GRAVITY, 0.0);
 
   let invMass = 1.0 / max(pp.mass, 1e-8);
   let a = (Fp + Fv ) * invMass ;
