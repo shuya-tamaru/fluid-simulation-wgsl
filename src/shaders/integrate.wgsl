@@ -70,14 +70,8 @@ fn cs_main(@builtin(global_invocation_id) gid: vec3<u32>) {
   let invMass = 1.0 / max(pp.mass, 1e-8);
   let a = (Fp + Fv ) * invMass ;
 
-  // Symplectic Euler
   vel = vel + a * ts.dt;
   pos = pos + vel * ts.dt;
-
-  // 境界は中心±半幅で判定（可視半径 r があるなら hx -= r など）
-  let hx = 0.5 * sp.boxWidth;
-  let hy = 0.5 * sp.boxHeight;
-  let hz = 0.5 * sp.boxDepth;
 
   positions[i]  = vec4<f32>(pos, 0.0);
   velocities[i] = vec4<f32>(vel, 0.0);
