@@ -21,6 +21,24 @@ function showWebGPUError() {
   }
 }
 
+function isMobile(): boolean {
+  // タッチデバイスの検出
+  const hasTouchScreen =
+    "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+  // User-Agentベースの検出
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isMobileUA =
+    /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+      userAgent
+    );
+
+  // 画面サイズベースの検出（補助的な判断）
+  const isSmallScreen = window.innerWidth <= 768;
+
+  return hasTouchScreen && (isMobileUA || isSmallScreen);
+}
+
 export async function bootstrap() {
   //canvas
   const canvas = document.querySelector<HTMLCanvasElement>("#app");
@@ -30,11 +48,45 @@ export async function bootstrap() {
   }
   sizeCanvas(canvas);
 
+  // モバイルデバイスの検出
+  const mobile = isMobile();
+  if (mobile) {
+    console.log("Mobile device detected");
+  }
+
   // WebGPUの事前チェック
   if (!navigator.gpu) {
     console.error("WebGPU is not supported: navigator.gpu is not available");
     showWebGPUError();
     return;
+  }
+
+  // モバイルデバイスでは、より厳密にWebGPUの動作確認
+  if (mobile) {
+    try {
+      const testAdapter = await navigator.gpu.requestAdapter();
+      if (!testAdapter) {
+        console.error(
+          "WebGPU adapter not available on mobile: requestAdapter returned null"
+        );
+        showWebGPUError();
+        return;
+      }
+
+      // さらに、実際にデバイスを取得できるかテスト
+      try {
+        const testDevice = await testAdapter.requestDevice();
+        testDevice.destroy(); // テスト用デバイスは破棄
+      } catch (error) {
+        console.error("WebGPU device request failed on mobile:", error);
+        showWebGPUError();
+        return;
+      }
+    } catch (error) {
+      console.error("WebGPU adapter request failed on mobile:", error);
+      showWebGPUError();
+      return;
+    }
   }
 
   try {
