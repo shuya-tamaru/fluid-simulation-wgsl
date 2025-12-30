@@ -108,31 +108,53 @@ export class Renderer {
   }
 
   render() {
-    const encoder = this.device.createCommandEncoder();
-    const canvasView = this.context.getCurrentTexture().createView();
+    try {
+      const encoder = this.device.createCommandEncoder();
+      const canvasView = this.context.getCurrentTexture().createView();
 
-    this.simulator.compute(encoder);
+      try {
+        this.simulator.compute(encoder);
+      } catch (error) {
+        throw new Error(
+          `simulator.compute() failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
 
-    const pass = encoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: canvasView,
-          clearValue: { r: 0.05, g: 0.07, b: 0.1, a: 1.0 },
-          loadOp: "clear",
-          storeOp: "store",
+      const pass = encoder.beginRenderPass({
+        colorAttachments: [
+          {
+            view: canvasView,
+            clearValue: { r: 0.05, g: 0.07, b: 0.1, a: 1.0 },
+            loadOp: "clear",
+            storeOp: "store",
+          },
+        ],
+        depthStencilAttachment: {
+          view: this.depth.createView(),
+          depthClearValue: 1,
+          depthLoadOp: "clear",
+          depthStoreOp: "store",
         },
-      ],
-      depthStencilAttachment: {
-        view: this.depth.createView(),
-        depthClearValue: 1,
-        depthLoadOp: "clear",
-        depthStoreOp: "store",
-      },
-    });
+      });
 
-    this.scene.draw(pass);
-    pass.end();
-    this.device.queue.submit([encoder.finish()]);
+      try {
+        this.scene.draw(pass);
+      } catch (error) {
+        throw new Error(
+          `scene.draw() failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
+
+      pass.end();
+      this.device.queue.submit([encoder.finish()]);
+    } catch (error) {
+      // エラーを再スローして、bootstrap.tsのエラーハンドリングでキャッチされるようにする
+      throw error;
+    }
 
     //debug
     // this.debug(

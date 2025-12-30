@@ -94,13 +94,25 @@ export class Integrate {
     return this.device.createBindGroup({
       layout: this.bindGroupLayout,
       entries: [
-        { binding: 0, resource: this.particles.getPositionBufferIn() },
-        { binding: 1, resource: this.particles.getVelocityBufferIn() },
-        { binding: 2, resource: this.pressureForce.getPressureForceBuffer() },
-        { binding: 3, resource: this.viscosity.getViscosityBuffer() },
-        { binding: 4, resource: this.sphParams.getBufferSpatial() },
-        { binding: 5, resource: this.sphParams.getBufferPhysics() },
-        { binding: 6, resource: this.timeStep.getBuffer() },
+        {
+          binding: 0,
+          resource: { buffer: this.particles.getPositionBufferIn() },
+        },
+        {
+          binding: 1,
+          resource: { buffer: this.particles.getVelocityBufferIn() },
+        },
+        {
+          binding: 2,
+          resource: { buffer: this.pressureForce.getPressureForceBuffer() },
+        },
+        {
+          binding: 3,
+          resource: { buffer: this.viscosity.getViscosityBuffer() },
+        },
+        { binding: 4, resource: { buffer: this.sphParams.getBufferSpatial() } },
+        { binding: 5, resource: { buffer: this.sphParams.getBufferPhysics() } },
+        { binding: 6, resource: { buffer: this.timeStep.getBuffer() } },
       ],
     });
   }
