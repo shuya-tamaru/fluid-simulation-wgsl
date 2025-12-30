@@ -190,7 +190,7 @@ export async function bootstrap() {
   }
 
   try {
-    debugInfo += `\nDevice.init() 開始...\n`;
+    debugInfo += `\n\n=== Device.init() 開始 ===\n`;
     updateDebugInfoAlways(debugInfo);
 
     //initialize device
@@ -200,10 +200,17 @@ export async function bootstrap() {
     debugInfo += `Format: ${format}\n`;
     updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `\nTransformSystem作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //params
     const trans = new TransformSystem(device);
+
+    debugInfo += `SphParams作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     const params = new SphParams(device, 32, 16, 16, 10000);
 
+    debugInfo += `createAssets() 実行中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //assets
     const { wireBox, particles, timeStep } = createAssets(
       device,
@@ -211,16 +218,32 @@ export async function bootstrap() {
       trans,
       params
     );
+    debugInfo += `createAssets(): 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `SphSimulator作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //compute
     const simulator = new SphSimulator(device, params, particles, timeStep);
+    debugInfo += `SphSimulator: 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `FluidScene作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //scene
     const scene = new FluidScene(wireBox, particles);
+    debugInfo += `FluidScene: 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `FluidGui作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //gui
     new FluidGui(scene, params, simulator);
+    debugInfo += `FluidGui: 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `Renderer作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //renderer
     const renderer = new Renderer(
       device,
@@ -230,34 +253,67 @@ export async function bootstrap() {
       simulator,
       trans
     );
+    debugInfo += `Renderer: 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `renderer.init() 実行中...\n`;
+    updateDebugInfoAlways(debugInfo);
     await renderer.init();
+    debugInfo += `renderer.init(): 成功\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `resizeハンドラ設定中...\n`;
+    updateDebugInfoAlways(debugInfo);
     //resize
     attachResize(canvas, (w, h) => {
       renderer.onResize(w, h);
     });
+    debugInfo += `resizeハンドラ: 設定完了\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `Stats作成中...\n`;
+    updateDebugInfoAlways(debugInfo);
     // stats
     const stats = new Stats();
     stats.showPanel(0);
     document.body.appendChild(stats.dom);
+    debugInfo += `Stats: 追加完了\n`;
+    updateDebugInfoAlways(debugInfo);
 
+    debugInfo += `レンダリングループ開始...\n`;
+    updateDebugInfoAlways(debugInfo);
     //requestAnimationFrame
+    let frameCount = 0;
     const loop = () => {
-      stats?.begin();
+      try {
+        stats?.begin();
 
-      const dt = 1 / 60;
-      timeStep.set(dt);
-      renderer.update();
-      renderer.render();
+        const dt = 1 / 60;
+        timeStep.set(dt);
+        renderer.update();
+        renderer.render();
 
-      stats?.end();
-      requestAnimationFrame(loop);
+        stats?.end();
+        frameCount++;
+        if (frameCount === 1) {
+          debugInfo += `レンダリングループ: 1フレーム目完了\n`;
+          updateDebugInfoAlways(debugInfo);
+        } else if (frameCount === 60) {
+          debugInfo += `レンダリングループ: 60フレーム目完了（正常動作中）\n`;
+          updateDebugInfoAlways(debugInfo);
+        }
+        requestAnimationFrame(loop);
+      } catch (error) {
+        debugInfo += `\nレンダリングループでエラー: ${
+          error instanceof Error ? error.message : String(error)
+        }\n`;
+        updateDebugInfoAlways(debugInfo);
+        throw error;
+      }
     };
     requestAnimationFrame(loop);
 
-    debugInfo += `\n初期化完了！レンダリングループ開始\n`;
+    debugInfo += `\n=== 初期化完了！レンダリングループ開始 ===\n`;
     updateDebugInfoAlways(debugInfo);
   } catch (error) {
     console.error("WebGPU initialization failed:", error);
