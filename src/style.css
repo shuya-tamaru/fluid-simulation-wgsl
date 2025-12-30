@@ -136,6 +136,38 @@ canvas {
   max-width: 100%;
 }
 
+/* 常に表示するデバッグ情報 */
+.debug-info-always {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  max-width: calc(100vw - 20px);
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  text-align: left;
+  font-family: "Courier New", monospace;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: #00ff00;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 50vh;
+  overflow-y: auto;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .debug-info-always {
+    font-size: 0.6rem;
+    padding: 0.5rem;
+    max-height: 40vh;
+  }
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .webgpu-error {

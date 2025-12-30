@@ -91,7 +91,19 @@ function isMobile(): boolean {
   return hasTouchScreen && (isMobileUA || isSmallScreen);
 }
 
+function updateDebugInfoAlways(info: string) {
+  const debugElement = document.getElementById("debug-info-always");
+  if (debugElement) {
+    debugElement.textContent = info;
+    debugElement.style.display = "block";
+  }
+}
+
 export async function bootstrap() {
+  // 初期デバッグ情報を表示
+  const initialDebugInfo = collectDebugInfo();
+  updateDebugInfoAlways(initialDebugInfo);
+
   //canvas
   const canvas = document.querySelector<HTMLCanvasElement>("#app");
   if (!canvas) {
@@ -106,24 +118,39 @@ export async function bootstrap() {
     console.log("Mobile device detected");
   }
 
+  // デバッグ情報を更新
+  let debugInfo = collectDebugInfo();
+  debugInfo += `\n\n=== 初期化プロセス ===\n`;
+  debugInfo += `Canvas found: Yes\n`;
+  debugInfo += `Mobile detected: ${mobile ? "Yes" : "No"}\n`;
+  updateDebugInfoAlways(debugInfo);
+
   // WebGPUの事前チェック
   if (!navigator.gpu) {
-    const debugInfo = collectDebugInfo(
-      new Error("navigator.gpu is not available")
-    );
+    debugInfo = collectDebugInfo(new Error("navigator.gpu is not available"));
+    debugInfo += `\n\n=== チェック結果 ===\nnavigator.gpu: 不存在\n`;
+    updateDebugInfoAlways(debugInfo);
     console.error("WebGPU is not supported: navigator.gpu is not available");
     showWebGPUError(debugInfo);
     return;
   }
 
+  // navigator.gpuが存在する場合のデバッグ情報更新
+  debugInfo = collectDebugInfo();
+  debugInfo += `\n\n=== チェック結果 ===\nnavigator.gpu: 存在\n`;
+  updateDebugInfoAlways(debugInfo);
+
   // モバイルデバイスでは、より厳密にWebGPUの動作確認
   if (mobile) {
     try {
+      debugInfo += `requestAdapter() テスト中...\n`;
+      updateDebugInfoAlways(debugInfo);
+
       const testAdapter = await navigator.gpu.requestAdapter();
       if (!testAdapter) {
-        const debugInfo = collectDebugInfo(
-          new Error("requestAdapter returned null")
-        );
+        debugInfo = collectDebugInfo(new Error("requestAdapter returned null"));
+        debugInfo += `\n\n=== チェック結果 ===\nrequestAdapter(): null\n`;
+        updateDebugInfoAlways(debugInfo);
         console.error(
           "WebGPU adapter not available on mobile: requestAdapter returned null"
         );
@@ -131,18 +158,31 @@ export async function bootstrap() {
         return;
       }
 
+      debugInfo += `requestAdapter(): 成功\n`;
+      updateDebugInfoAlways(debugInfo);
+
       // さらに、実際にデバイスを取得できるかテスト
       try {
+        debugInfo += `requestDevice() テスト中...\n`;
+        updateDebugInfoAlways(debugInfo);
+
         const testDevice = await testAdapter.requestDevice();
         testDevice.destroy(); // テスト用デバイスは破棄
+
+        debugInfo += `requestDevice(): 成功\n`;
+        updateDebugInfoAlways(debugInfo);
       } catch (error) {
-        const debugInfo = collectDebugInfo(error);
+        debugInfo = collectDebugInfo(error);
+        debugInfo += `\n\n=== チェック結果 ===\nrequestDevice(): 失敗\n`;
+        updateDebugInfoAlways(debugInfo);
         console.error("WebGPU device request failed on mobile:", error);
         showWebGPUError(debugInfo);
         return;
       }
     } catch (error) {
-      const debugInfo = collectDebugInfo(error);
+      debugInfo = collectDebugInfo(error);
+      debugInfo += `\n\n=== チェック結果 ===\nrequestAdapter(): 例外発生\n`;
+      updateDebugInfoAlways(debugInfo);
       console.error("WebGPU adapter request failed on mobile:", error);
       showWebGPUError(debugInfo);
       return;
@@ -150,8 +190,15 @@ export async function bootstrap() {
   }
 
   try {
+    debugInfo += `\nDevice.init() 開始...\n`;
+    updateDebugInfoAlways(debugInfo);
+
     //initialize device
     const { device, context, format } = await Device.init(canvas);
+
+    debugInfo += `Device.init(): 成功\n`;
+    debugInfo += `Format: ${format}\n`;
+    updateDebugInfoAlways(debugInfo);
 
     //params
     const trans = new TransformSystem(device);
@@ -209,6 +256,9 @@ export async function bootstrap() {
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
+
+    debugInfo += `\n初期化完了！レンダリングループ開始\n`;
+    updateDebugInfoAlways(debugInfo);
   } catch (error) {
     console.error("WebGPU initialization failed:", error);
     // エラーの詳細をログに出力
@@ -216,7 +266,9 @@ export async function bootstrap() {
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
     }
-    const debugInfo = collectDebugInfo(error);
+    debugInfo = collectDebugInfo(error);
+    debugInfo += `\n\n=== エラー発生 ===\n初期化に失敗しました\n`;
+    updateDebugInfoAlways(debugInfo);
     showWebGPUError(debugInfo);
   }
 }
