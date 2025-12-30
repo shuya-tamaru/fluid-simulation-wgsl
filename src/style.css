@@ -117,6 +117,25 @@ canvas {
   transform: translateY(0);
 }
 
+/* デバッグ情報 */
+.debug-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+  font-family: "Courier New", monospace;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: #a0a0a0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+  max-width: 100%;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .webgpu-error {
