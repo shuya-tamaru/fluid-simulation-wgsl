@@ -30,6 +30,13 @@ export async function bootstrap() {
   }
   sizeCanvas(canvas);
 
+  // WebGPUの事前チェック
+  if (!navigator.gpu) {
+    console.error("WebGPU is not supported: navigator.gpu is not available");
+    showWebGPUError();
+    return;
+  }
+
   try {
     //initialize device
     const { device, context, format } = await Device.init(canvas);
@@ -92,6 +99,11 @@ export async function bootstrap() {
     requestAnimationFrame(loop);
   } catch (error) {
     console.error("WebGPU initialization failed:", error);
+    // エラーの詳細をログに出力
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
     showWebGPUError();
   }
 }

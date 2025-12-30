@@ -44,7 +44,7 @@ export class Renderer {
       theta: this.cameraParams.theta,
       phi: this.cameraParams.phi,
     });
-    this.init();
+    // init()はbootstrap.tsで明示的に呼ばれるため、ここでは呼ばない
   }
 
   async init() {
